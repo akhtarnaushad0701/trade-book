@@ -1,0 +1,725 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Sale Invoice Entry</title>
+  <link rel="stylesheet" href="/menuHeader.css">
+  <!-- Google Fonts (offline you can replace with local copy) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome (download for offline use) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        background: #f4f6f9;
+    }
+    .mainDiv {
+    /*    max-width: 1200px;
+        margin: 30px auto;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 6px 30px rgba(0,0,0,0.15);
+        padding: 30px;*/
+		
+		background: #ffffff;
+		border-radius: 16px;
+		box-shadow: 0 6px 30px rgba(0,0,0,0.15);
+		max-width: 1100px;
+		
+		 margin: 10px auto;
+		overflow: hidden;
+    }
+	
+	.card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    max-width: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+  }
+  
+	.card-left
+	{
+		width:200px;   
+		background: linear-gradient(160deg, #4f46e5, #3b82f6); border: 1px solid gray; justify-content: center;  padding: 25px;
+		display: grid 2fr;
+		 display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+
+		padding:30px;
+
+	}
+	.card-left h2 {
+		font-size: 22px;
+		color:white;
+		margin-bottom: 12px;
+		
+		}
+
+	.logo{
+	  width:56px;
+	  height:56px;
+	  display:grid;
+	  place-items:center;
+	  border-radius:12px;
+	  background:var(--glass);
+	  box-shadow: 0 6px 18px rgba(2,6,23,0.15) inset;
+	  font-weight:700;
+	  font-size:20px;
+	}
+    h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #1976d2;
+        font-size: 28px;
+        font-weight: 600;
+    }
+table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        thead {
+			font-weight: bold;
+			position: sticky;
+			top: 0;
+            background: #007bff;
+            color: white;
+        }
+
+        th, td {
+           
+            text-align: center;
+			padding-left: 10px;
+			padding-right: 10px;
+			padding: 5px 5px;
+        }
+
+        th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+
+		td
+		{
+			 border-right: 1px solid #e9ecef;
+		}
+		td input, 
+		td select {
+        flex: 1;
+        padding: 2px 2px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 13px;
+       
+        transition: all 0.2s;
+    }
+       
+
+        tbody tr:nth-child(even) {
+            background-color: #f9fbfd;
+        }
+
+        tbody tr:hover {
+            background-color: #eef5ff;
+            transition: 0.2s;
+        }
+		 tr.selected {
+        background-color: #074e5a !important;
+		color: white;
+		font-weight: bold;
+		}
+	
+	.card-right {
+  max-width:100%;
+	
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #ffffff;
+	
+  }
+ .message {
+        text-align: center;
+        font-size: 15px;
+        margin-top: 15px;
+        margin-bottom: 10px;
+        max-width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        color: #070707;
+        background-color: #dcddec;
+        border: 1px solid #dcddec;
+    }
+ .form-grid {
+    margin-top:10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 200px;
+  }
+
+  .field {
+     display: flex;
+     align-items: center;
+  }
+
+   .field label {
+     width: 100px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 12px;
+    text-align: right;
+    color: #444;
+  }
+
+   .field input,  .field textarea,  .field select {
+     flex: 1;
+    padding: 5px 5px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+  }
+
+ .error {
+      border: 2px solid #ff0000 !important;
+      background-color: #ffe6e6; /* optional to make it obvious */
+    }
+
+   .field input:focus,  
+   .field textarea,  
+   .field select:focus {
+    border-color: #1976d2;
+        outline: none;
+        box-shadow: 0 0 6px rgba(25, 118, 210, 0.35);
+        background-color: #fff;
+  }
+
+   .field textarea { resize: vertical; min-height: 80px; }
+
+  .col-span-2 { grid-column: 1 / -1; }
+
+  .actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  
+   .form-actions {
+        grid-column: span 2;
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        margin-top: 10px;
+    }
+    .form-actions input {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        transition: transform 0.2s, background 0.3s;
+    }
+.form-actions input[type="submit"] {
+        background-color: #28a745;
+    }
+
+.divContainer {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+        width: 100%;
+    height: 220px;
+    overflow-x: auto;
+    overflow-y: auto;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    margin-left: auto;
+    margin-right: auto; 
+    margin-top: 10px;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    }
+
+    .form-actions input[type="submit"]:hover {
+        background-color: #218838;
+        transform: translateY(-2px);
+    }
+    .form-actions input[type="reset"] {
+        background-color: #6c757d;
+    }
+    .form-actions input[type="reset"]:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
+    }
+
+ .form-actions button {
+        background-color: #007bff;;
+        color: white;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 25px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .form-actions button:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+    }
+.error {
+      border: 2px solid #ff0000 !important;
+      background-color: #ffe6e6; /* optional to make it obvious */
+    }
+  /* ===== Responsive ===== */
+  @media(max-width: 900px){
+    .card { grid-template-columns: 1fr; }
+    form { grid-template-columns: 1fr; }
+    .col-span-2 { grid-column: auto; }
+  }
+</style>
+<script type="text/javascript" src="jquery.min.js"></script>
+
+<script type="module" src="saleinvoice.js" defer></script>
+
+<script>
+    
+let mAct="0";
+
+function subTotal()
+{
+	
+	let totAmt=0;
+	let elmnt;
+	var a=0;
+	let table = document.getElementById("productsTable");
+	for(var i=0;i<table.rows.length-1;i++)
+	{
+		elmnt=document.getElementById(`amount_${i+1}`);
+		a=parseFloat(elmnt.value||0);
+		if(isNaN(a))
+		{
+			a=0;
+		}
+		
+		totAmt=parseFloat(totAmt)+parseFloat(a)
+	}
+	document.getElementById("totalAmt").value=(totAmt).toFixed(2);;
+}
+
+function myMultiply(val1,val2,val3) {
+
+  let x = document.getElementById(val3);
+	let y = document.getElementById(val1);
+  let z= document.getElementById(val2);
+  var a = y.value;
+  var b =z.value;
+  x.value = (parseFloat(a)* parseFloat(b)).toFixed(2);
+  if(isNaN(x.value)){x.value=0;}
+}
+
+async function runSqlQuery(sql) {
+  try {
+    const res = await fetch('/api/my_sql/get-SqlQuery', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sql })
+    });
+
+    if (!res.ok) {
+      throw new Error(`Server error: ${res.status}`);
+    }
+
+    return await res.json();  // rows from DB
+  } catch (err) {
+    console.error('Query failed:', err);
+    return [];
+  }
+}
+async function GetStock(str,cmbval) {
+ if(cmbval)
+ {
+    try {
+
+     let sql = `SELECT catName,subcatNm,count(subcatID) as cnt,ifnull(InStock,0) as InStock FROM find_in_stock WHERE subcatID=${cmbval}`;  
+      const data = await runSqlQuery(sql);
+      let stock='';
+      data.forEach(row => {
+        stock=row.InStock;
+    });
+     document.getElementById(str).value = Number(stock);
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }		  
+  }
+}
+async function FillSubCatCombo(elID,catId,subCatVal) {
+    if(catId)
+    {
+    try {
+    
+     let sql = `SELECT subcatID,subcatNm FROM subcatagory where catID=${catId}`;  
+      const data = await runSqlQuery(sql);
+      let scID = document.getElementById(elID);
+      let opt = '<option value="0">-- Select Product --</option>';
+      data.forEach(row => {
+      const selected = (subCatVal == row.subcatID) ? "selected" : "";
+      opt += `<option value="${row.subcatID}" ${selected}>${row.subcatNm}</option>`;
+    });
+    scID.innerHTML = opt;
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }		  
+  }
+}
+async function FillCatCombo(str,catVal) {
+     try {
+
+     let sql = `SELECT catID, CONCAT(catName,' ',quality) AS catName FROM catagory`;  
+     const data = await runSqlQuery(sql);
+     let cID = document.getElementById(str);
+     let opt = '<option value="0">-- Select Type --</option>';
+     data.forEach(row => {
+     const selected = (catVal == row.catID) ? "selected" : "";
+     opt += `<option value="${row.catID}" ${selected}>${row.catName}</option>`;
+    });
+    cID.innerHTML = opt;
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }		  
+}
+
+  let rowCount = 0; // start from 1 (since first row exists in HTML)
+
+function addRows(sTrnids,catID,subcatID,qnty,sPrice,amount) {
+            rowCount++;
+            console.log(rowCount);
+            console.log("catID : "+catID);
+            let tbody = document.querySelector("#productsTable tbody");
+			let row = tbody.insertRow(-1);  // always inside <tbody>
+
+            row.innerHTML = `
+				<td style="display: none"> <input type="hidden" id="sTrnid_${rowCount}" name="sTrnid[]" value="${sTrnids}" ></td>
+                <td> <select style="width:100%" name="catID_name[]" id="catID_${rowCount}" onchange="FillSubCatCombo('subcatID_${rowCount}',this.value,'')">
+				<option value="0">-- Select Type --</option>
+                  
+                </select>
+				
+				</td>
+                        <td><select style="width:100%" name="subcatID_name[]" id="subcatID_${rowCount}" onchange="GetStock('stock_${rowCount}',this.value)">
+                    <option value="0">-- Select Product --</option>
+                   
+                </select></td>
+                        <td><input type="text" style="text-align:right; width:100%" name="stock_name[]" id="stock_${rowCount}" size="6" required></td>
+                        <td style="width: 30px"><input style="text-align:right;  width:100%" size="6" type="number" name="qnty[]" id="qnty_${rowCount}" value="${qnty}" size="8" min="1" required></td>
+                        <td><input type="text" style="text-align:right; width:100%" name="price[]" id="rate_${rowCount}" size="8" onfocusout="myMultiply('qnty_${rowCount}','rate_${rowCount}','amount_${rowCount}')" value="${sPrice}" required></td>
+						<td><input type="text" style="text-align:right; width:100%" name="amount[]" id="amount_${rowCount}" size="8" onfocusout="subTotal()" onkeydown="checkTab(event)" value="${amount}" required></td>
+                        <td><i class="fa-solid fa-trash" style="color: red; cursor: pointer;"   onclick="removeRow(this)"></i></td>
+            `;
+			      FillCatCombo("catID_"+rowCount,catID);
+            FillSubCatCombo("subcatID_"+rowCount,catID,subcatID);
+            GetStock(`stock_${rowCount}`,subcatID);
+        }
+
+        function removeRow(btn) {
+            let row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+			      reindexRows();
+        }
+        function openList()
+        {
+          window.location.href='saleinvoiceinfo.html';  
+			  
+        }
+		function reindexRows() {
+			const table = document.getElementById("productsTable");
+			const rows = table.querySelectorAll("tbody tr"); // all rows inside tbody
+			rowCount = 0;
+
+			rows.forEach((row, i) => {
+				rowCount = i + 1; // keep track of the latest index
+
+				// Update IDs inside each row
+				row.querySelectorAll("input, select").forEach(el => {
+					if (el.id) {
+						let baseId = el.id.split("_")[0]; // e.g. "qnty"
+						el.id = baseId + "_" + rowCount;
+					}
+					if (el.name && el.name.endsWith("[]")) {
+						// name[] stays same, no change needed
+					}
+				});
+
+				// Update onchange / onfocusout handlers with new IDs
+				let rate = row.querySelector('[id^="rate_"]');
+				let qnty = row.querySelector('[id^="qnty_"]');
+				let amount = row.querySelector('[id^="amount_"]');
+				let subcat = row.querySelector('[id^="subcatID_"]');
+				let cat = row.querySelector('[id^="catID_"]');
+				if (cat) {
+					cat.setAttribute("onchange", `fill_subCat_combo('subcatID_${rowCount}', this.value)`);
+				}
+				if (rate && qnty && amount) {
+					rate.setAttribute("onfocusout", `myMultiply('${qnty.id}','${rate.id}','${amount.id}')`);
+				}
+				if (amount) {
+					amount.setAttribute("onfocusout", "subTotal()");
+					amount.setAttribute("onkeydown", "checkTab(event)");
+				}
+				if (subcat) {
+					subcat.setAttribute("onchange", `GetStock('stock_${rowCount}',this.value)`);
+				}
+			});
+}
+function checkTab(e) {
+    if (e.key === "n" || e.key === "N") {
+        let input = e.target;
+        let row = input.closest("tr");
+        let table = document.getElementById("productsTable");
+        let lastRow = table.rows[table.rows.length - 1];
+        e.preventDefault();
+        // if user is on last row and pressing Tab on price field
+        if (row === lastRow) {
+            setTimeout(addRows('','','','','',''), 10); // add a new row
+        }
+    }
+}
+
+function validateForm() {
+	let isValid = true;
+    //AccType.classList.remove("error");
+		let CustName = document.getElementById("CustName");
+		let txtsPrice= document.getElementById("totalAmt");
+    let saleDate  = document.getElementById('saleDate'); 
+    CustName.classList.remove("error");
+    saleDate.classList.remove("error");
+    txtsPrice.classList.remove("error");
+    if(txtsPrice.value==0||txtsPrice.value==""||isNaN(txtsPrice.value))
+		{
+			txtsPrice.classList.add("error");
+			isValid = false;
+		}
+
+    if(saleDate.value=="")
+    {
+      saleDate.classList.add("error");
+      isValid = false;
+    }
+
+		if( CustName.selectedIndex === 0)
+		{
+			CustName.classList.add("error");
+			isValid = false;
+		}
+	let table = document.getElementById("productsTable");
+		let catID;
+		let subcatID;
+		let qnty;
+		let rate;
+		let amount;
+	for(var i=0;i<table.rows.length-1;i++)
+	{
+		catID=document.getElementById(`catID_${i+1}`);
+		subcatID=document.getElementById(`subcatID_${i+1}`);
+		qnty=document.getElementById(`qnty_${i+1}`);
+		rate=document.getElementById(`rate_${i+1}`);
+		amount=document.getElementById(`amount_${i+1}`);
+    catID.classList.remove("error");
+		subcatID.classList.remove("error");
+    qnty.classList.remove("error");
+    rate.classList.remove("error");
+    amount.classList.remove("error");
+		//alert(catID+" "+subcatID+" "+qnty+" "+ rate+" "+amount);
+		if( catID.selectedIndex === 0)
+		{
+			catID.classList.add("error");
+			isValid = false;
+		}
+		if( subcatID.selectedIndex === 0)
+		{
+			subcatID.classList.add("error");
+			isValid = false;
+		}
+    if(qnty.value==0||qnty.value==""||isNaN(qnty.value))
+		{
+			qnty.classList.add("error");
+			isValid = false;
+		}
+
+		if(rate.value==0||rate.value==""||isNaN(rate.value))
+		{
+			rate.classList.add("error");
+			isValid = false;
+		}
+		if(amount.value==0||amount.value==""||isNaN(amount.value))
+		{
+			amount.classList.add("error");
+			isValid = false;
+		}
+		 
+	}
+	
+		//let name = prompt("Enter your name:");
+		//alert("Your Name is :"+name);
+		if(table.rows.length<2)
+		{
+			alert('Error : Description table has not any data row.\n Atleast one data row is compulsory.');
+			//alert("Error : Description table has no row");
+			return false;
+		}
+		
+		
+		
+   if (isValid) {
+					return true;
+    }	
+		return false; 		
+}
+function resetErrors() 
+ {
+    let CustName = document.getElementById("CustName");
+		let txtsPrice= document.getElementById("totalAmt");
+    let saleDate  = document.getElementById('saleDate'); 
+    CustName.classList.remove("error");
+    saleDate.classList.remove("error");
+    txtsPrice.classList.remove("error");
+    CustName.selectedIndex = 0;
+    //saleDate,value="";
+   // txtsPrice.value="";
+    document.getElementById("remarks").value="";
+    document.getElementById("remarks").value="";
+    let table = document.getElementById("productsTable");
+		let catID;
+		let subcatID;
+		let qnty;
+		let rate;
+		let amount;
+  for(var i=0;i<table.rows.length-1;i++)
+	{
+		catID=document.getElementById(`catID_${i+1}`);
+		subcatID=document.getElementById(`subcatID_${i+1}`);
+		qnty=document.getElementById(`qnty_${i+1}`);
+		rate=document.getElementById(`rate_${i+1}`);
+		amount=document.getElementById(`amount_${i+1}`);
+    catID.classList.remove("error");
+		subcatID.classList.remove("error");
+    qnty.classList.remove("error");
+    rate.classList.remove("error");
+    amount.classList.remove("error");
+  }
+ }
+
+ function new_load()
+ {
+   
+    window.location.href='saleInvoice.html';
+ }
+</script>
+   <script>
+  // Load menu.html
+    fetch("/menu.html")
+      .then(res => res.text())
+      .then(html => { document.getElementById("menu-placeholder").innerHTML = html; });
+  </script>
+</head>
+<body>
+  
+    <div id="menu-placeholder"></div> <!-- menu.html will load here -->
+ <form id="saleinvoiceForm" onsubmit="return validateForm()" onreset="resetErrors()">
+    <div class="mainDiv">
+      
+  <div class="card" style="display: flex; border: 1px solid none;">
+    <div class="card-left">
+      
+         <div class="logo" style="color:white;">TB</div>
+			<h2>TradeBook</h2>
+        
+      </div>
+  <div style="width:100%; background:white; border: 1px solid white; ">
+		<!--<h1><i class="fa-solid fa-briefcase"></i>  Business Dashboard</h1>-->
+<div class="card-right">  
+	    <h2 style="margin-top:15px;">Sale Invoice Entry</h2>
+		<div id="message" class="message">Ready for New Record Entry..</div>
+   
+    <div class="form-grid"> <!-- ==================-->
+		<input type="hidden" id="act" name="act" value="">
+        <input type="hidden" id="saleID" name="saleID" value="">
+
+      <div class="field">
+       
+        <label for="saleDate">Sale Date<span style="color: red;">*</span></label>
+        <input type="date" id="saleDate" name="saleDate" value="">
+      </div>
+      <div class="field">
+         <label for="CustName">Customer<span style="color: red;">*</span></label>
+                <select style="max-width:600px" name="CustName" id="CustName">
+                    <option value="0">-- Select Customer --</option>
+				
+		</select>
+      </div>
+    </div>    
+    <div class="divContainer">
+        <table id="productsTable">
+            <thead>
+                <tr>
+                    <th style='display: none'> ID </th>
+                    <th>Type</th>
+                    <th>Product</th>
+                    <th>Stock</th>
+                    <th style="width: 30px">Quantity</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>    
+            <tbody id="t-body">
+            </tbody>
+        </table>
+    </div>
+    <div class="form-grid" style="margin-top:10px;"> <!-- ==================-->
+        <div class="field">
+            <label for="totalAmt">Sale Amount :</label>
+            <input type="text" name="totalAmt" id="totalAmt" value="">
+      </div>
+      <div class="field">
+            <label for="remarks">Remarks :</label>
+            <input type="text" name="remarks" id="remarks" value="">
+      </div>
+    </div>
+            
+      <div class="form-actions" style="margin-top:40px;">
+        <input type="submit" id="submitBtn" value="✔  Submit">
+		    <input type="reset" value="↺ Reset">
+            <button type="button" onclick="new_load()" ><i class="fa-solid fa-file-circle-plus"></i> New</button>
+            <button type="button" onclick="openList()" ><i class="fa-solid fa-table"></i> List</button>
+            <button type="button" onclick="addRows('','','','','','')" ><i class="fa-solid fa-plus"></i> Add Items</button>
+           
+      </div>
+	   </div>
+	    </div>
+      </div>
+
+   
+  </div>    
+  </form>
+</body>
+</html>

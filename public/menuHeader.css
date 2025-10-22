@@ -1,0 +1,112 @@
+/* GLOBAL RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: Arial;
+  background: #f4f6f9;
+}
+.main-menu-div{
+	        top: 0;
+			margin-bottom:10px
+}
+/* NAVBAR */
+ul {
+  list-style: none;
+  background: #023b56; /* dark navy */
+  display: flex;
+  padding: 0;
+}
+ul:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+/* TOP ITEMS */
+li {
+  position: relative;
+}
+li a, .dropbtn {
+  display: block;
+  padding: 12px 20px;
+  color: #ecf0f1;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+li a:hover, .dropdown:hover .dropbtn {
+  background: #1abc9c; /* teal highlight */
+  color: white;
+}
+
+/* FIRST LEVEL DROPDOWN */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  z-index: 1000;
+  padding: 8px 0;
+}
+
+.dropdown-content a,
+.dropdown-content .submenu-label {
+  padding: 10px 16px;
+  color: #2c3e50;
+  display: block;
+  text-decoration: none;
+  transition: background 0.3s ease;
+  font-size: 14px;
+}
+.dropdown-content a:hover {
+  background: #f0f0f0;
+  color: #1abc9c;
+}
+
+/* SHOW DROPDOWN ON HOVER */
+.dropdown:hover > .dropdown-content {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+/* SUBMENU */
+.dropdown-submenu {
+  position: relative;
+}
+.submenu-label {
+  cursor: default;
+  font-weight: 500;
+}
+.dropdown-submenu > .submenu-label::after {
+  content: "▶";
+  float: right;
+  font-size: 12px;
+  margin-top: 3px;
+  color: #7f8c8d;
+}
+
+/* NESTED MENU */
+.dropdown-submenu > .dropdown-content {
+  top: 0;
+  left: 100%;
+  margin-left: 2px;
+  border-radius: 6px;
+  min-width: 200px;
+}
+.dropdown-submenu:hover > .dropdown-content {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(5px);}
+  to {opacity: 1; transform: translateY(0);}
+}

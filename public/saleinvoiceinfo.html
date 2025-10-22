@@ -1,0 +1,494 @@
+
+<!DOCTYPE HTML>
+<html lang="en">  
+<head>
+    <meta charset="UTF-8">
+    <title>Sale Report</title>
+    <!-- Google Fonts & Icons -->
+   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link rel="stylesheet" href="./menuHeader.css">
+
+    <style>
+        .mainDiv {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .mainDiv h1 {
+            font-size: 30px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .topform-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 10px;
+            justify-content: center;
+            align-items: center;  
+        }
+
+        .message {
+            text-align: center;
+            align-items: center; 
+            font-size: 15px;
+            margin-bottom: 15px;
+            height:25px;
+            border-radius: 8px;
+            color: red;
+            width:100%;
+            font-weight:bold;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .search-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .search-bar input {
+            padding: 5px 7px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 250px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+        }
+
+        .divContainer {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            width: 100%;
+            height: 430px;
+            overflow: auto;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            margin-left: auto;
+            margin-right: auto;
+            white-space: nowrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        thead {
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            background: #007bff;
+            color: white;
+        }
+
+        th, td {
+            text-align: center;
+            padding: 6px 8px;
+            border: 1px solid #e9ecef;
+        }
+/*
+tbody tr:nth-child(even) {
+    background-color: #f9fbfd;
+}
+
+tbody tr:hover {
+    background-color: #eef5ff;
+    transition: 0.2s;
+}
+
+tr.selected {
+    background-color: #074e5a !important;
+    color: white;
+    font-weight: bold;
+}
+*/
+
+/* Alternate group colors */
+.group-odd td,
+.group-odd td.merge {
+    background-color: #f9fbfd; /* light gray */
+}
+
+.group-even td,
+.group-even td.merge {
+    background-color: #ffffff; /* white */
+}
+
+#saleTable tbody tr.highlight td,
+#saleTable tbody td.highlight {
+   background-color: #eef5ff;
+    transition: 0.2s;
+}
+
+#saleTable tbody tr.newselected td,
+#saleTable tbody td.newselected {
+   background-color: #074e5a !important;
+		color: white;
+		font-weight: bold;
+}
+
+		
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            margin: 10px;
+            justify-content: center;
+            align-items: center;  
+        }
+
+        .thirdgrid {
+            grid-column: 3;
+        }
+        .fourthgrid {
+            grid-column: 4;
+        }
+
+.form-actions {
+        grid-column: span 2;
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        margin-top: 30px;
+    }
+
+
+	 .form-actions button {
+       width:150px;
+       height:30px;
+       
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 4px;
+            padding: 6px;
+            border-radius: 6px;
+            transition: 0.3s;
+    }
+
+
+        .btn-icon {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 4px;
+            padding: 6px;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+
+        .btn-edit {
+            border: 2px solid rgba(13,110,253,0.1);
+            color: #0d6efd;
+        }
+
+        .btn-edit:hover {
+            background: rgba(13,110,253,0.1);
+        }
+
+        .btn-delete {
+            border: 2px solid rgba(220,53,69,0.1);
+            color: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background: rgba(220,53,69,0.1);
+        }
+       
+        .btn-download {
+            border: 2px solid rgba(24, 100, 3, 0.1);
+            color: #05b91dff;
+        }
+
+        .btn-download:hover {
+            background: rgba(24, 100, 3, 0.1);
+        }
+
+
+    </style>
+<script>
+pID="";
+/*
+function SelectRow(x) {
+    deHighlight();
+    pID=x.getAttribute("data-id");
+    x.classList.add("selected");
+    document.getElementById("msg").innerHTML="";
+}*/
+
+// Assign alternate colors sale_id wise
+document.addEventListener("DOMContentLoaded", function() {
+    let prevSaleId = null;
+    let toggle = false;
+
+    document.querySelectorAll("#saleTable tbody tr").forEach(row => {
+        let saleId = row.getAttribute("data-id");
+
+        if (saleId !== prevSaleId) {
+            toggle = !toggle; // switch color group when saleId changes
+            prevSaleId = saleId;
+        }
+
+        // Add class to all rows of this sale_id
+        if (toggle) {
+            row.classList.add("group-odd");
+        } else {
+            row.classList.add("group-even");
+        }
+    });
+});
+
+function SelectRow(row) {
+     // debug print (open browser console to see)
+    let saleId = row.getAttribute("data-id");
+    console.log("SelectRow() saleId =", saleId);
+
+    // store globally
+    pID = saleId;
+
+    // Clear previous selection (only inside table body)
+    document.querySelectorAll("#saleTable tbody tr, #saleTable tbody td").forEach(el => {
+        el.classList.remove("newselected");
+    });
+
+    // Highlight all rows and their cells for this sale_id
+    document.querySelectorAll("#saleTable tbody tr[data-id='" + saleId + "']").forEach(r => {
+        r.classList.add("newselected");            // add class to row
+        r.querySelectorAll("td").forEach(td => {   // also add to each cell
+            td.classList.add("newselected");
+        });
+    });
+
+    // Some rowspan <td> might not be inside those rows in some DOM shapes,
+    // so ensure any td with the same data-id also gets highlighted
+    document.querySelectorAll("#saleTable tbody td[data-id='" + saleId + "']").forEach(td => {
+        td.classList.add("newselected");
+    });
+}
+function highlightRow(row) {
+     // debug print (open browser console to see)
+    let saleId = row.getAttribute("data-id");
+    //console.log("SelectRow() saleId =", saleId);
+
+    // store globally
+   
+
+    // Clear previous selection (only inside table body)
+    document.querySelectorAll("#saleTable tbody tr, #saleTable tbody td").forEach(el => {
+        el.classList.remove("highlight");
+    });
+
+    // Highlight all rows and their cells for this sale_id
+    document.querySelectorAll("#saleTable tbody tr[data-id='" + saleId + "']").forEach(r => {
+        r.classList.add("highlight");            // add class to row
+        r.querySelectorAll("td").forEach(td => {   // also add to each cell
+            td.classList.add("highlight");
+        });
+    });
+
+    // Some rowspan <td> might not be inside those rows in some DOM shapes,
+    // so ensure any td with the same data-id also gets highlighted
+    document.querySelectorAll("#saleTable tbody td[data-id='" + saleId + "']").forEach(td => {
+        td.classList.add("highlight");
+    });
+}
+function removeHighlight(row) {
+     // debug print (open browser console to see)
+    let saleId = row.getAttribute("data-id");
+    //console.log("SelectRow() saleId =", saleId);
+
+    // store globally
+ 
+
+    // Clear previous selection (only inside table body)
+    document.querySelectorAll("#saleTable tbody tr, #saleTable tbody td").forEach(el => {
+        el.classList.remove("highlight");
+    });
+}
+
+function UnSelectRow() {
+	pID = "";
+
+
+    // Clear previous selection (only inside table body)
+    document.querySelectorAll("#saleTable tbody tr, #saleTable tbody td").forEach(el => {
+        el.classList.remove("newselected");
+    });
+
+}
+function deHighlight() {
+    let rows = document.querySelectorAll("#saleTable tbody tr");
+    rows.forEach(r => r.classList.remove("selected"));
+}
+function showForm(str) {
+	//alert(pID);
+    if(pID=="") {
+        document.getElementById("msg").innerHTML="Row is not selected.";
+        return;
+    }
+    window.location.href='saleInvoice.html?sID='+ pID +'&act='+str;
+	
+}
+
+function downloadPDF() {
+	//alert(pID);
+    if(pID=="") {
+       // document.getElementById("msg").innerHTML="Row is not selected.";
+        return;
+    }
+    //window.location.href='saleInvoice.php?sID='+ pID +'&act='+str;
+	window.open('invoice_pdf.php?sale_id='+pID,'_blank')
+}
+
+async function fillTable() {
+    try {
+     
+
+     let sql = `SELECT si.sale_id, DATE_FORMAT(si.sale_date,'%d-%m-%Y') as sale_date,
+             c.CustName, si.sale_tot, si.remarks,
+             s.sTrnid, CONCAT(cat.catName,' ',cat.quality) AS catName,
+             sub.subcatNm, s.qnty, s.sPrice, s.sAmount
+			 
+			FROM salesinv_items s 
+			LEFT JOIN catagory cat ON s.catID=cat.catID
+			LEFT JOIN subcatagory sub ON s.subcatID=sub.subcatID
+			LEFT JOIN salesinv si ON s.sale_id=si.sale_id
+			LEFT JOIN customers c ON si.CustID=c.CustID
+			ORDER BY si.sale_date, s.sTrnid`;  
+
+    const res = await fetch('/api/my_sql/get-SqlQuery', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sql })
+    });
+
+    if (!res.ok) {
+      throw new Error(`Server error: ${res.status}`);
+    }
+ 
+    const results = await res.json(); // rows from DB
+
+    let data = {};
+     if (results.length > 0) {
+        results.forEach(row => {
+            if (!data[row.sale_id]) {
+                data[row.sale_id] = [];
+            }
+            data[row.sale_id].push(row);
+        });
+    }
+
+
+    let html = "";
+
+for (let sale_id in data) {
+    let rows = data[sale_id];
+    let rowspan = rows.length;
+    let first = true;
+
+    rows.forEach(r => {
+        html += `<tr data-id="${sale_id}" onclick="SelectRow(this)" onmouseover="highlightRow(this)" onmouseout="removeHighlight(this)">`;
+
+        html += `<td style="display:none">${sale_id}</td>`;
+
+        if (first) {
+            html += `<td rowspan="${rowspan}" class="merge" data-id="${sale_id}">${r.sale_date}</td>`;
+            html += `<td rowspan="${rowspan}" class="merge" data-id="${sale_id}">${r.CustName}</td>`;
+        }
+
+        html += `<td>${r.catName}</td>`;
+        html += `<td>${r.subcatNm}</td>`;
+        html += `<td>${r.qnty}</td>`;
+        html += `<td>${r.sPrice}</td>`;
+        html += `<td>${r.sAmount}</td>`;
+
+        if (first) {
+            html += `<td rowspan="${rowspan}" class="merge" data-id="${sale_id}">${r.sale_tot}</td>`;
+            html += `<td rowspan="${rowspan}" class="merge" data-id="${sale_id}">${r.remarks}</td>`;
+        }
+
+        html += `</tr>`;
+        first = false;
+    });
+}
+// finally inject into table body
+
+    const tbody = document.getElementById('t-Body');
+    tbody.innerHTML = html; // clear old data
+    
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+ function codeAddress() {
+		fillTable();
+
+}
+window.onload = codeAddress;
+
+fetch("/menu.html")
+      .then(res => res.text())
+      .then(html => { document.getElementById("menu").innerHTML = html; });
+  </script>
+</head>
+
+<body>
+<div id="menu"></div> <!-- menu.html will load here -->
+
+<form id="saleinvoiceinfo">
+
+
+<div class="mainDiv">
+    <h1>Sale Invoice Report</h1>
+    <div class="divContainer">
+    <table id="saleTable">
+        <thead>
+            <tr onclick="UnSelectRow()">
+                <th style="display:none">ID</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Product Type</th>
+                <th>Product</th>
+                <th>Qnty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Total</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+         <tbody id="t-Body">
+
+        </tbody>
+    </table>
+    </div>
+
+    <div class="form-actions">
+        <button type="button" class="btn-edit"  onclick="showForm(1)"><i class="fa-solid fa-pen-to-square"></i>Edit</button>
+		<button type="button" class="btn-delete" onclick="showForm(2)"><i class="fa-solid fa-trash"></i>Delete</button>
+        <button type="button" class="btn-download" onclick="downloadPDF()"> <i class="fa-solid fa-download"></i>Download</button>
+
+    </div>
+</div>
+</body>
+</html>

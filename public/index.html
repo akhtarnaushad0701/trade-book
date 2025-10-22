@@ -1,0 +1,236 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Business Dashboard</title>
+  <link rel="stylesheet" href="./menuHeader.css">
+  
+  <link rel="stylesheet" href="/menuHeader.css">
+  <!-- Google Fonts (offline you can replace with local copy) -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- Font Awesome (download for offline use) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- Chart.js for graphs -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        background: #f4f6f9;
+    }
+    .mainDiv {
+        max-width: 1200px;
+        margin: 30px auto;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 6px 30px rgba(0,0,0,0.15);
+        padding: 30px;
+    }
+    h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #1976d2;
+        font-size: 28px;
+        font-weight: 600;
+    }
+    .card-grid {
+		margin-top: 10px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 30px;
+    }
+    .card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .card i {
+        font-size: 28px;
+        margin-bottom: 10px;
+        color: #1976d2;
+    }
+    .card h3 {
+        margin: 5px 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+    }
+    .card p {
+        font-size: 16px;
+        color: rgb(0,200,0);
+		font-weight:bold;
+    }
+    .chart-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .chart-container {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+    }
+    .table-container {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        overflow: auto;
+        max-height: 300px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 5px;
+        /*border-bottom: 1px solid #eee; */
+        text-align: left;
+        font-size: 14px;
+		 font-weight: bold;
+    }
+    th {
+        background: #f4f6f9;
+        font-weight: 600;
+	
+    }
+    tr:hover {
+        background: #f9f9f9;
+    }
+.toggle-box {
+    padding: 15px;
+    background: rgb(204, 0, 0);
+	width:100%; 
+	text-align: center;
+	
+    color: white;
+    cursor: pointer;
+    border-radius: 10px;
+    margin-bottom: 10px;
+	
+}
+.toggle-box:hover
+{
+		 background: rgb(255, 40, 40);
+		  box-shadow: 0 3px 15px rgba(0,0,0,0.5);
+}
+.details {
+    display: none;  /* hidden by default */
+    padding: 15px;
+	width:100%;
+    background: white;
+    border-radius: 6px;
+    margin-bottom: 10px;
+	 box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+}
+
+.chart-container {
+      width: 80%;
+      max-width: 600px;
+      margin: 40px auto;
+    }
+</style>
+<script src="index.js" defer></script>
+  <script>
+    function toggleInfo(id) {
+     // loadDashboard();
+    let box = document.getElementById(id);
+   // document.getElementById("purVal1").textContent="hello";
+      if (box.style.display === "block") {
+          box.style.display = "none";  // hide
+      } else {
+          box.style.display = "block"; // show
+      }
+  }
+  // Load menu.html
+    fetch("/menu.html")
+      .then(res => res.text())
+      .then(html => { document.getElementById("menu").innerHTML = html; });
+  </script>
+</head>
+<body>
+  <form id="indexForm">
+    <div id="menu"></div> <!-- menu.html will load here -->
+    <div class="mainDiv">
+      <h1><i class="fa-solid fa-briefcase"></i>  Business Dashboard</h1>
+  <div style="display: flex;">
+    <div style="width:300px;  background: white; border: 1px solid white; justify-content: center;  padding: 25px;">
+      <div class="toggle-box" onclick="toggleInfo('info1')">  <i class="fa-solid fa-truck"></i> <h3> Purchase Value</h3></div>
+        <div id="info1" class="details">
+        <table>
+            <tr><td >Qnty:</td><td id="purVal1"></td></tr>
+            <tr><td>Avg. Rate:</td><td  id="purVal2"></td></tr>
+            <tr><td>Tot. Amount:</td><td  id="purVal3"></td></tr>
+          </table>
+        </div>
+    
+
+      <div class="toggle-box" onclick="toggleInfo('info2')"><i class="fa-solid fa-bag-shopping"></i>  <h3>Sale Value</h3></div>
+        <div id="info2" class="details">
+          <table>
+            <tr><td>Qnty:</td><td  id="salVal1"></td></tr>
+            <tr><td>Avg. Rate:</td><td  id="salVal2"></td></tr>
+            <tr><td>Tot. Amount:</td><td  id="salVal3"></td></tr>
+          </table>
+        </div>
+        <div class="toggle-box" onclick="toggleInfo('info3')"> <i class="fa-solid fa-warehouse"></i>  <h3>Stock Value</h3></div>
+        <div id="info3" class="details">
+        <table>
+            <tr><td>Qnty:</td><td id="stVal1"></td></tr>
+            <tr><td>Avg. Rate:</td><td id="stVal2"></td></tr>
+            <tr><td>Tot. Amount:</td><td id="stVal3"></td></tr>
+          </table>
+        </div>
+        <div class="toggle-box" onclick="toggleInfo('info4')"><i class="fa-solid fa-money-bill-trend-up"></i>  <h3>Profit/Loss</h3></div>
+        <div id="info4" class="details">
+            <table>
+            <tr><td>Sale:</td><td id="plVal1"></td></tr>
+            <tr><td>Purchase:</td><td id="plVal2"></td></tr>
+            <tr><td>Gross Profit:</td><td id="plVal3"></td></tr>
+          </table>
+        </div>
+        <div class="toggle-box" onclick="toggleInfo('info5')"><i class="fas fa-money-bill-wave"></i></i>  <h3>Total Expense</h3></div>
+        <div id="info5" class="details">
+            <table>
+            <tr>
+            <td>Sale:</td> <td>₹ <td>
+            </tr>
+            <tr>
+            <td>Purchase:</td> <td>₹<td>
+            </tr>
+            <tr>
+            <td>Gross Profit:</td> <td> ₹<td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div style="width:800px; background:white;">
+        <div class="card-grid">
+          <div class="card"><i class="fas fa-chart-line"></i><h3>Total Sales</h3><p id="tsVal1"></p></div>
+          <div class="card"><i class="fas fa-history"></i><h3>Opening Due</h3><p id="odVal1" style="color:red"></p></div>
+          <div class="card"><i class="fa-solid fa-money-bill-trend-up"></i><h3>Total Payment</h3><p id="tpVal1"></p></div>
+          <div class="card"><i class="fas fa-balance-scale"></i><h3>Total Due</h3><p id="tdVal1" style="color:red"></p></div>
+        </div>
+        <div class="chart-container">
+          <canvas id="salesChart"></canvas>
+        </div>
+      </div>
+
+    </div>    
+  </div>
+  </form>
+    
+</body>
+</html>
