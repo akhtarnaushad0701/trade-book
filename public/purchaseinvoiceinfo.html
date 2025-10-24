@@ -3,7 +3,7 @@
 <html lang="en">  
 <head>
     <meta charset="UTF-8">
-    <title>Sale Report</title>
+    <title>Purchase Info</title>
     <!-- Google Fonts & Icons -->
    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -133,14 +133,14 @@ tr.selected {
     background-color: #ffffff; /* white */
 }
 
-#saleTable tbody tr.highlight td,
-#saleTable tbody td.highlight {
+#purchaseTable tbody tr.highlight td,
+#purchaseTable tbody td.highlight {
    background-color: #eef5ff;
     transition: 0.2s;
 }
 
-#saleTable tbody tr.newselected td,
-#saleTable tbody td.newselected {
+#purchaseTable tbody tr.newselected td,
+#purchaseTable tbody td.newselected {
    background-color: #074e5a !important;
 		color: white;
 		font-weight: bold;
@@ -241,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let prevSaleId = null;
     let toggle = false;
 
-    document.querySelectorAll("#saleTable tbody tr").forEach(row => {
+    document.querySelectorAll("#purchaseTable tbody tr").forEach(row => {
         let saleId = row.getAttribute("data-id");
 
         if (saleId !== prevSaleId) {
@@ -267,12 +267,12 @@ function SelectRow(row) {
     pID = saleId;
 
     // Clear previous selection (only inside table body)
-    document.querySelectorAll("#saleTable tbody tr, #saleTable tbody td").forEach(el => {
+    document.querySelectorAll("#purchaseTable tbody tr, #purchaseTable tbody td").forEach(el => {
         el.classList.remove("newselected");
     });
 
     // Highlight all rows and their cells for this sale_id
-    document.querySelectorAll("#saleTable tbody tr[data-id='" + saleId + "']").forEach(r => {
+    document.querySelectorAll("#purchaseTable tbody tr[data-id='" + saleId + "']").forEach(r => {
         r.classList.add("newselected");            // add class to row
         r.querySelectorAll("td").forEach(td => {   // also add to each cell
             td.classList.add("newselected");
@@ -281,7 +281,7 @@ function SelectRow(row) {
 
     // Some rowspan <td> might not be inside those rows in some DOM shapes,
     // so ensure any td with the same data-id also gets highlighted
-    document.querySelectorAll("#saleTable tbody td[data-id='" + saleId + "']").forEach(td => {
+    document.querySelectorAll("#purchaseTable tbody td[data-id='" + saleId + "']").forEach(td => {
         td.classList.add("newselected");
     });
 }
@@ -294,12 +294,12 @@ function highlightRow(row) {
    
 
     // Clear previous selection (only inside table body)
-    document.querySelectorAll("#saleTable tbody tr, #saleTable tbody td").forEach(el => {
+    document.querySelectorAll("#purchaseTable tbody tr, #purchaseTable tbody td").forEach(el => {
         el.classList.remove("highlight");
     });
 
     // Highlight all rows and their cells for this sale_id
-    document.querySelectorAll("#saleTable tbody tr[data-id='" + saleId + "']").forEach(r => {
+    document.querySelectorAll("#purchaseTable tbody tr[data-id='" + saleId + "']").forEach(r => {
         r.classList.add("highlight");            // add class to row
         r.querySelectorAll("td").forEach(td => {   // also add to each cell
             td.classList.add("highlight");
@@ -308,7 +308,7 @@ function highlightRow(row) {
 
     // Some rowspan <td> might not be inside those rows in some DOM shapes,
     // so ensure any td with the same data-id also gets highlighted
-    document.querySelectorAll("#saleTable tbody td[data-id='" + saleId + "']").forEach(td => {
+    document.querySelectorAll("#purchaseTable tbody td[data-id='" + saleId + "']").forEach(td => {
         td.classList.add("highlight");
     });
 }
@@ -321,7 +321,7 @@ function removeHighlight(row) {
  
 
     // Clear previous selection (only inside table body)
-    document.querySelectorAll("#saleTable tbody tr, #saleTable tbody td").forEach(el => {
+    document.querySelectorAll("#purchaseTable tbody tr, #purchaseTable tbody td").forEach(el => {
         el.classList.remove("highlight");
     });
 }
@@ -331,13 +331,13 @@ function UnSelectRow() {
 
 
     // Clear previous selection (only inside table body)
-    document.querySelectorAll("#saleTable tbody tr, #saleTable tbody td").forEach(el => {
+    document.querySelectorAll("#purchaseTable tbody tr, #purchaseTable tbody td").forEach(el => {
         el.classList.remove("newselected");
     });
 
 }
 function deHighlight() {
-    let rows = document.querySelectorAll("#saleTable tbody tr");
+    let rows = document.querySelectorAll("#purchaseTable tbody tr");
     rows.forEach(r => r.classList.remove("selected"));
 }
 function showForm(str) {
@@ -346,37 +346,28 @@ function showForm(str) {
         document.getElementById("msg").innerHTML="Row is not selected.";
         return;
     }
-    window.location.href='saleInvoice.html?sID='+ pID +'&act='+str;
+    window.location.href='purinvoice.html?pId='+ pID +'&act='+str;
 	
 }
 
-function downloadPDF() {
-	//alert(pID);
-    if(pID=="") {
-       // document.getElementById("msg").innerHTML="Row is not selected.";
-        return;
-    }
-    //window.location.href='saleInvoice.php?sID='+ pID +'&act='+str;
-	window.open('invoice_pdf.php?sale_id='+pID,'_blank')
-}
 function addNew() {
-	window.location.href='saleinvoice.html';
+	window.location.href='purinvoice.html';
 }
+
 async function fillTable() {
     try {
      
 
-     let sql = `SELECT si.sale_id, DATE_FORMAT(si.sale_date,'%d-%m-%Y') as sale_date,
-             c.CustName, si.sale_tot, si.remarks,
-             s.sTrnid, CONCAT(cat.catName,' ',cat.quality) AS catName,
-             sub.subcatNm, s.qnty, s.sPrice, s.sAmount
-			 
-			FROM salesinv_items s 
-			LEFT JOIN catagory cat ON s.catID=cat.catID
-			LEFT JOIN subcatagory sub ON s.subcatID=sub.subcatID
-			LEFT JOIN salesinv si ON s.sale_id=si.sale_id
-			LEFT JOIN customers c ON si.CustID=c.CustID
-			ORDER BY si.sale_date, s.sTrnid`;  
+     let sql = `SELECT i.pTran_id,i.pur_id,DATE_FORMAT(p.pur_date,'%d-%m-%Y') as pur_date ,p.invoice_no,p.tot_amount,p.remarks,p.supID,s.supName,
+				i.catID,CONCAT(c.catName,' ',c.quality) AS catName,i.subcatID,sc.subcatNm,i.qnty,i.pur_rate,i.pur_amount
+				FROM purinv_items i
+				LEFT JOIN catagory c ON i.catID = c.catID
+				LEFT JOIN subcatagory sc ON i.subcatID = sc.subcatID
+
+				LEFT JOIN purinv p ON i.pur_id = p.pur_id
+				LEFT JOIN supplier s ON p.supID = s.supID
+				
+				ORDER BY p.pur_date, i.pTran_id`;  
 
     const res = await fetch('/api/my_sql/get-SqlQuery', {
       method: 'POST',
@@ -393,40 +384,41 @@ async function fillTable() {
     let data = {};
      if (results.length > 0) {
         results.forEach(row => {
-            if (!data[row.sale_id]) {
-                data[row.sale_id] = [];
+            if (!data[row.pur_id]) {
+                data[row.pur_id] = [];
             }
-            data[row.sale_id].push(row);
+            data[row.pur_id].push(row);
         });
     }
 
 
     let html = "";
 
-for (let sale_id in data) {
-    let rows = data[sale_id];
+for (let pur_id in data) {
+    let rows = data[pur_id];
     let rowspan = rows.length;
     let first = true;
 
     rows.forEach(r => {
-        html += `<tr data-id="${sale_id}" onclick="SelectRow(this)" onmouseover="highlightRow(this)" onmouseout="removeHighlight(this)">`;
+        html += `<tr data-id="${pur_id}" onclick="SelectRow(this)" onmouseover="highlightRow(this)" onmouseout="removeHighlight(this)">`;
 
-        html += `<td style="display:none">${sale_id}</td>`;
+        html += `<td style="display:none">${pur_id}</td>`;
 
         if (first) {
-            html += `<td rowspan="${rowspan}" class="merge" data-id="${sale_id}">${r.sale_date}</td>`;
-            html += `<td rowspan="${rowspan}" class="merge" data-id="${sale_id}">${r.CustName}</td>`;
+            html += `<td rowspan="${rowspan}" class="merge" data-id="${pur_id}">${r.pur_date}</td>`;
+            html += `<td rowspan="${rowspan}" class="merge" data-id="${pur_id}">${r.supName}</td>`;
+           // html += `<td rowspan="${rowspan}" class="merge" data-id="${pur_id}">${r.invoice_no}</td>`;
         }
 
         html += `<td>${r.catName}</td>`;
         html += `<td>${r.subcatNm}</td>`;
         html += `<td>${r.qnty}</td>`;
-        html += `<td>${r.sPrice}</td>`;
-        html += `<td>${r.sAmount}</td>`;
+        html += `<td>${r.pur_rate}</td>`;
+        html += `<td>${r.pur_amount}</td>`;
 
         if (first) {
-            html += `<td rowspan="${rowspan}" class="merge" data-id="${sale_id}">${r.sale_tot}</td>`;
-            html += `<td rowspan="${rowspan}" class="merge" data-id="${sale_id}">${r.remarks}</td>`;
+            html += `<td rowspan="${rowspan}" class="merge" data-id="${pur_id}">${r.tot_amount}</td>`;
+            html += `<td rowspan="${rowspan}" class="merge" data-id="${pur_id}">${r.remarks}</td>`;
         }
 
         html += `</tr>`;
@@ -462,14 +454,14 @@ fetch("/menu.html")
 
 
 <div class="mainDiv">
-    <h1>Sale Invoice Report</h1>
+    <h1>Purchase Invoice Report</h1>
     <div class="divContainer">
-    <table id="saleTable">
+    <table id="purchaseTable">
         <thead>
             <tr onclick="UnSelectRow()">
                 <th style="display:none">ID</th>
                 <th>Date</th>
-                <th>Customer</th>
+                <th>Supplier</th>
                 <th>Product Type</th>
                 <th>Product</th>
                 <th>Qnty</th>
@@ -486,10 +478,10 @@ fetch("/menu.html")
     </div>
 
     <div class="form-actions">
-        <button type="button" class="btn-download" onclick="addNew()"><i class="fa-solid fa-file-circle-plus"></i>Add New</button>
+        <button type="button" class="btn-download" onclick="addNew()"><i class="fa-solid fa-file-circle-plus"></i> Add New</button>
         <button type="button" class="btn-edit"  onclick="showForm(1)"><i class="fa-solid fa-pen-to-square"></i>Edit</button>
 		<button type="button" class="btn-delete" onclick="showForm(2)"><i class="fa-solid fa-trash"></i>Delete</button>
-        <button type="button" class="btn-download" onclick="downloadPDF()"> <i class="fa-solid fa-download"></i>Download</button>
+       
 
     </div>
 </div>

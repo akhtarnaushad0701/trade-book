@@ -19,6 +19,7 @@ app.use('/api/payment', require('./routes/payment'));
 app.use('/api/account', require('./routes/account'));
 app.use('/api/expense', require('./routes/expense'));
 app.use('/api/sales', require('./routes/sales'));
+app.use('/api/purchase', require('./routes/purchase'));
 app.use('/api/my_sql', require('./routes/my_sql'));
 
 //app.use('/api/supplierinfo', require('./routes/supplierinfo'));
