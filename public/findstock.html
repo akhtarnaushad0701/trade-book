@@ -1,0 +1,450 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Due Payment Details</title>
+<link rel="stylesheet" href="./menuHeader.css">
+<style>
+    :root {
+        --primary: #007bff;
+        --success: #28a745;
+        --danger: #dc3545;
+        --light-bg: #f8f9fa;
+        --table-border: #dee2e6;
+        --header-bg: #343a40;
+        --header-text: #ffffff;
+    }
+
+   
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+    }
+
+    .mainDiv {
+        background-color: #ffffff;
+        margin: 10px auto;
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 800px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .select-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    select {
+        padding: 5px 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .divContainer {
+        border: 1px solid var(--table-border);
+		width: 100%;
+    height: 350px;
+        border-radius: 8px;
+        overflow-x: auto;
+        max-height: 350px;
+        margin-top: 10px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 5px;
+        border: 1px solid var(--table-border);
+        text-align: left;
+		
+		  border-left: none;
+		  border-right: none;
+
+
+    }
+
+    th {
+		
+		border-right:  2px solid white;
+            background-color: #125da9;
+        color: var(--header-text);
+        position: sticky;
+        top: 0;
+        z-index: 1;
+		 opacity:1;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    tr:hover {
+        background-color: #e9f7fa;
+        cursor: pointer;
+    }
+
+    tr.selected {
+        background-color: #074e5a !important;
+    color: white;
+    font-weight: bold;
+    }
+	
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* 6 equal columns */
+  gap: 15px; /* space between columns */
+  margin: 10px;
+  justify-content: center;
+  align-items: center;  
+   
+}
+
+.form-threegrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+  gap: 15px; /* space between columns */
+  margin: 10px;
+  justify-content: center;
+  align-items: center;  
+   
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+.last {
+  grid-column: 6;   /* explicitly put in 6th column */
+}
+.secondlast {
+  grid-column: 5;   /* explicitly put in 6th column */
+}
+label {
+  text-align: right;
+  font-weight: bold;
+ 
+}
+
+input {
+	color:red;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  font-size: 20px;
+   font-weight: bold;
+   text-align: right;
+  
+}
+    .form-actions {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .form-actions button {
+        background-color: var(--primary);
+        color: white;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 25px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .form-actions button:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+    }
+
+    .error-message {
+        color: var(--danger);
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    @media (max-width: 600px) {
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .select-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        select {
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+    
+	let task=0;
+    function GetStockDetail() {
+      
+		var valCatId="";
+		var valSubCat="";
+		valCatId=document.getElementById("catagory").value;
+		valSubCat=document.getElementById("product").value;
+		//alert(valCatId+"----"+valSubCat);
+		var str1;
+		var str2;
+		var str3;
+		if(valCatId=="" || valCatId==0 )
+		{
+			str1="1";
+			str2="1";
+		}
+		else
+		{ 
+			str1= "pur_pro_count.catID="+valCatId;
+			if(valSubCat=="" || valSubCat==0){str2="1";}
+			else{ str2="pur_pro_count.subcatID="+valSubCat;}
+		}
+		
+		str3=str1+ " AND "+str2;
+		FindStock(str3);
+		
+    }
+	
+	
+	function getBack()
+	{
+		//alert("");
+		//getElementById("customers").value="";
+		//getElementById("customers").selectedIndex=0;
+		document.getElementById("customers").selectedIndex = 0;
+		showDuePayment("");
+		task=0;
+		document.getElementById("lblTot").innerHTML="Total Due :";
+	}
+	
+	
+    function SelectRow(x) {
+		
+		//let table = document.getElementById("tblDuePmt");
+		//alert(table.rows.length);
+        deHighlight();
+		//cID=x.cells[0].innerText;
+		
+        x.classList.add("selected");
+    }
+
+    function deHighlight() {
+		
+        let table = document.getElementById("tblDuePmt");
+        if (!table) return;
+        let rows = table.getElementsByTagName("tr");
+        for (let i = 0; i < rows.length; i++) {
+            rows[i].classList.remove("selected");
+        }
+    }
+	
+	
+		
+	
+    window.onload = function () {
+         GetStockDetail();
+       FillCategory();
+		document.getElementById("totDue").readOnly = true;
+		document.getElementById("totDue").style.backgroundColor = "#f0f0f0";
+
+       
+		
+    };
+async function FillCategory()
+{						 
+    let sql ="SELECT catID,CONCAT(catName,' ',quality) AS catName FROM catagory";
+    const results = await runSqlQuery(sql);
+    let catNm=document.getElementById('catagory');
+    let  opt = '<option value="0">-- All Catagory --</option>';
+	 results.forEach(row => {
+           
+          opt += `<option value="${row.catID}">${row.catName}</option>`;
+          });				
+     catNm.innerHTML = opt;
+					
+}	
+	
+</script>
+<script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript">
+		
+            $(function(){
+                $('#catagory').change(function(){
+                   FillSubCatCombo(this.value);
+                });
+				
+            });
+
+async function FillSubCatCombo(catId) {
+    if(catId)
+    {
+    try {
+    
+     let sql = `SELECT subcatID,subcatNm FROM subcatagory where catID=${catId}`;  
+      const data = await runSqlQuery(sql);
+      let scID = document.getElementById('product');
+      let opt = '<option value="0">-- All Product --</option>';
+      data.forEach(row => {
+      
+      opt += `<option value="${row.subcatID}">${row.subcatNm}</option>`;
+    });
+    scID.innerHTML = opt;
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }		  
+  }
+}
+
+async function FindStock(q)
+{
+ try {
+    let sql = `SELECT
+                pur_pro_count.catID, CONCAT(pur_pro_count.catName,' ', pur_pro_count.quality) AS catName,
+                pur_pro_count.subcatID,
+                pur_pro_count.subcatNm,
+                ifnull(pur_pro_count.TotalQnty,0) AS TotPurQnty,
+                sale_pro_count.catID as ab, sale_pro_count.catName as cd,
+                sale_pro_count.quality as ef, sale_pro_count.subcatID as gh,
+                sale_pro_count.subcatNm ij,
+                ifnull(sale_pro_count.TotalQnty,0) AS Sold,
+                ifnull(pur_pro_count.TotalQnty,0)- ifnull(sale_pro_count.TotalQnty,0) AS InStock
+
+                from pur_pro_count left JOIN
+                sale_pro_count ON
+                pur_pro_count.subcatID=sale_pro_count.subcatID WHERE ${q} order by pur_pro_count.catID,pur_pro_count.subcatID`; 
+
+                const results = await runSqlQuery(sql);
+                const tbody = document.getElementById('t-Body');
+
+    
+                tbody.innerHTML = ''; // clear old data
+                results.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.setAttribute("onclick", "SelectRow(this)");
+                    tr.innerHTML = `
+                    <td style='display: none'>${row.subcatID}</td>
+                    <td style='text-align:left'>${row.catName}</td>
+                    <td style='text-align:left'>${row.subcatNm}</td>
+                    <td style='text-align:left'>${row.TotPurQnty}</td>
+                    <td style='text-align:left'>${row.Sold}</td>
+                    <td style='text-align:left'>${row.InStock}</td>
+                    `;
+                    tbody.appendChild(tr);
+                    
+                });		
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }		    
+
+}
+
+async function runSqlQuery(sql) {
+  try {
+    const res = await fetch('/api/my_sql/get-SqlQuery', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sql })
+    });
+
+    if (!res.ok) {
+      throw new Error(`Server error: ${res.status}`);
+    }
+
+    return await res.json();  // rows from DB
+  } catch (err) {
+    console.error('Query failed:', err);
+    return [];
+  }
+}
+</script>
+<script>
+function showForm()
+	{
+		document.getElementById("catagory").selectedIndex = 0;
+		document.getElementById("product").selectedIndex = 0;
+		deHighlight();
+		GetStockDetail();
+		//window.location.href='findstock.php?q='+ '1';
+	}
+
+    fetch("/menu.html")
+      .then(res => res.text())
+      .then(html => { document.getElementById("menu").innerHTML = html; });
+</script>
+<script src="jquery.min.js"></script>
+</head>
+
+<body>
+
+<div id="menu"></div> <!-- menu.html will load here -->
+<form id="findstock">
+
+<div class="mainDiv">
+    <h1>Stock Report</h1>
+
+    <div class="form-threegrid">
+        <label for="catagory">Catagory:</label>
+        <select name="catagory" id="catagory" onchange="GetStockDetail()" >
+            <option value="">-- All Catagory --</option>
+           
+        </select>
+		
+		 <label for="product">Product:</label>
+        <select name="product" id="product" onchange="GetStockDetail() ">
+            <option value="">-- All Product --</option>
+            
+        </select>
+    </div>
+
+    <div class="divContainer">
+        <div id="txtHint">
+            <table id='tblDuePmt' style='width:100%'>
+                 <thead>
+					<tr class='ntr'>
+						<th style='display: none'> ID </th>
+						<th> Catagory </th>
+						<th> Product </th>
+						<th> Total Purchase  </th>
+						<th> Total Sold  </th>
+						<th> In Stock  </th>
+					</tr>
+                </thead>
+                <tbody id="t-Body">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+	
+
+    <div class="form-actions">
+        <button  type="button" onclick="showForm() "><b>↺ Reset</b></button>
+	</div>
+        
+    
+</div>
+
+</form>
+
+</body>
+</html>

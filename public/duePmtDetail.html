@@ -1,0 +1,540 @@
+
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Due Payment Details</title>
+<link rel="stylesheet" href="./menuHeader.css">
+<style>
+    :root {
+        --primary: #007bff;
+        --success: #28a745;
+        --danger: #dc3545;
+        --light-bg: #f8f9fa;
+        --table-border: #dee2e6;
+        --header-bg: #343a40;
+        --header-text: #ffffff;
+    }
+
+   
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .mainDiv {
+        background-color: #ffffff;
+        margin: 10px auto;
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 800px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .select-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    select {
+        padding: 5px 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .divContainer {
+        border: 1px solid var(--table-border);
+		width: 100%;
+    height: 300px;
+        border-radius: 8px;
+        overflow-x: auto;
+        max-height: 350px;
+        margin-top: 10px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 5px;
+        border: 1px solid var(--table-border);
+        text-align: left;
+		
+		  border-left: none;
+		  border-right: none;
+
+
+    }
+
+    th {
+            background-color: #125da9;
+        color: var(--header-text);
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    tr:hover {
+        background-color: #e9f7fa;
+        cursor: pointer;
+    }
+
+    tr.selected {
+        background-color: #074e5a !important;
+    color: white;
+    font-weight: bold;
+    }
+	
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* 6 equal columns */
+  gap: 15px; /* space between columns */
+  margin: 10px;
+  justify-content: center;
+  align-items: center;  
+   
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+.last {
+  grid-column: 6;   /* explicitly put in 6th column */
+}
+.secondlast {
+  grid-column: 5;   /* explicitly put in 6th column */
+}
+label {
+  text-align: right;
+  font-weight: bold;
+ 
+}
+
+input {
+	color:red;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  font-size:20px;
+   font-weight: bold;
+   text-align: right;
+  
+}
+    .form-actions {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .form-actions button {
+        background-color: var(--primary);
+        color: white;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 25px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .form-actions button:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+    }
+
+    .error-message {
+        color: var(--danger);
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    @media (max-width: 600px) {
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .select-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        select {
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+    let cID = "";
+	let task=0;
+
+async function showDuePayment(str) {
+        
+        cID = "";
+       
+
+        str = str ? "CustID='" + str + "'" : "1";
+        try {
+            let sql = `SELECT * FROM find_total_due WHERE ${str}  AND NOT TotalDue=0`;
+                const results = await runSqlQuery(sql);
+                const tDiv = document.getElementById('txtHint');
+
+    
+                tDiv.innerHTML = ''; // clear old data
+                strHtml=`<table id='tblDuePmt' style='width:100%'>
+                            <tr class='ntr'>
+                                <th style='display: none'> ID </th>
+                                <th> Customer </th>
+                                <th> Prev. Due  </th>
+                                <th> Total Sale  </th>
+                                <th> Total Payment  </th>
+                                <th> Total Due  </th>
+                            </tr>`;
+                results.forEach(row => {
+                    strHtml+= `
+                    <tr id='dRow' onclick='SelectRow(this)'>
+                    <td style='display: none'>${row.CustID}</td>
+                    <td style='text-align:left'>${row.CustName}</td>
+                    <td style='text-align:right'>${row.PrevDue}</td>
+                    <td style='text-align:right'>${row.Totsales}</td>
+                    <td style='text-align:right'>${row.TotPayment}</td>
+                    <td style='text-align:right; color:red;'><b>${row.TotalDue}</b></td>
+                    </tr>
+                    `;
+                });		
+                strHtml+= `</table>`;
+                tDiv.innerHTML = strHtml;
+                GetAllTotal();
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }		    
+    }
+	function showDue() {
+		
+        if(cID=="")
+		{
+			return;
+		}
+        let x=cID;
+		showDuePayment(cID);
+		cID=x;
+    }
+	
+	function getBack()
+	{
+		//alert("");
+		//getElementById("customers").value="";
+		//getElementById("customers").selectedIndex=0;
+		document.getElementById("customers").selectedIndex = 0;
+		showDuePayment("");
+		task=0;
+		document.getElementById("lblTot").innerHTML="Total Due :";
+	}
+	
+async function showPaymentDetail(str) {
+       
+		if(cID=="")
+		{
+			return;
+		}
+		try {
+            let sql = `SELECT payment.CustID, DATE_FORMAT(payment.pmtDate,'%d-%M-%Y') as pmtDate,customers.CustName,
+							payment.pmtAmount
+							FROM
+							payment LEFT JOIN customers
+							ON
+							payment.CustID=customers.CustID
+							WHERE
+							payment.CustID=${cID} ORDER BY payment.pmtID`;
+
+                const results = await runSqlQuery(sql);
+                const tDiv = document.getElementById('txtHint');
+
+    
+                tDiv.innerHTML = ''; // clear old data
+                strHtml=`<table id='tblDuePmt' style='width:100%'>
+                            <tr class='ntr'>
+                                <th style='display: none'> ID </th>
+                                <th> Date </th>
+                                <th> Customer </th>
+                                <th> Amount  </th>
+                            </tr>`;
+                results.forEach(row => {
+                    strHtml+= `
+                    <tr id='dRow' onclick='SelectRow(this)'>
+                    <td style='display: none'>${row.CustID}</td>
+                    <td style='text-align:left'>${row.pmtDate}</td>
+                    <td style='text-align:right'>${row.CustName}</td>
+                    <td style='text-align:right'>${row.pmtAmount}</td>
+                    </tr>
+                    `;
+                });		
+                strHtml+= `</table>`;
+                tDiv.innerHTML = strHtml;
+               GetPaymentTotal();
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }		    
+		
+    }
+	
+	async function showSaleDetail(str) {
+       
+		if(cID=="")
+		{
+			return;
+		}
+		try {
+            let sql = `SELECT si.CustID, 
+							DATE_FORMAT(si.sale_date,'%d-%M-%Y') as sale_date,
+							c.CustName, 
+							si.sale_tot, 
+							si.remarks,
+							s.sTrnid, 
+							CONCAT(cat.catName,' ',cat.quality) AS catName,
+							sub.subcatNm, s.qnty, s.sPrice, s.sAmount
+							
+							FROM salesinv_items s 
+							LEFT JOIN catagory cat ON s.catID=cat.catID
+							LEFT JOIN subcatagory sub ON s.subcatID=sub.subcatID
+							LEFT JOIN salesinv si ON s.sale_id=si.sale_id
+							LEFT JOIN customers c ON si.CustID=c.CustID
+							WHERE si.CustID=${cID} 
+							ORDER BY si.sale_date, s.sTrnid`;
+
+                const results = await runSqlQuery(sql);
+                const tDiv = document.getElementById('txtHint');
+
+    
+                tDiv.innerHTML = ''; // clear old data
+                strHtml=`<table id='tblDuePmt' style='width:100%'>
+                            <tr class='ntr'>
+                                <th style='display: none'> ID </th>
+                                <th> Date </th>
+                                <th> Customer </th>
+                                <th> Type  </th>
+                                <th> Product  </th>
+                                <th> Qnty  </th>
+                                <th> Price  </th>
+                                <th> Amount  </th>
+                            </tr>`;
+                results.forEach(row => {
+                    strHtml+= `
+                    <tr id='dRow' onclick='SelectRow(this)'>
+                    <td style='display: none'>${row.CustID}</td>
+                    <td style='text-align:left'>${row.sale_date}</td>
+                    <td style='text-align:right'>${row.CustName}</td>
+                    <td style='text-align:right'>${row.catName}</td>
+                    <td style='text-align:right'>${row.subcatNm}</td>
+                    <td style='text-align:right'>${row.qnty}</td>
+                    <td style='text-align:right'>${row.sPrice}</td>
+                    <td style='text-align:right'>${row.sAmount}</td>
+                    </tr>
+                    `;
+                });		
+                strHtml+= `</table>`;
+                tDiv.innerHTML = strHtml;
+                GetSaleTotal();
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }		    
+    }
+
+    function SelectRow(x) {
+		
+		
+		let table = document.getElementById("tblDuePmt");
+		//alert(table.rows.length);
+        deHighlight();
+		cID=x.cells[0].innerText;
+		
+        x.classList.add("selected");
+    }
+
+    function deHighlight() {
+		
+        let table = document.getElementById("tblDuePmt");
+        if (!table) return;
+        let rows = table.getElementsByTagName("tr");
+        for (let i = 0; i < rows.length; i++) {
+            rows[i].classList.remove("selected");
+        }
+    }
+	function GetAllTotal()
+	{
+		 let table = document.getElementById("tblDuePmt");
+		var ts=0;
+		var tp=0;
+		var td=0;
+		
+		
+        if (!table) return;
+        
+        for (let i = 1; i < table.rows.length; i++) {
+             ts=ts+parseFloat(table.rows[i].cells[3].innerText);
+			tp=tp+parseFloat(table.rows[i].cells[4].innerText);
+			td=td+parseFloat(table.rows[i].cells[5].innerText);
+        }
+		/*
+		document.getElementById("totSale").value=ts.toFixed(2);
+		document.getElementById("totPmnt").value=tp.toFixed(2); */
+		document.getElementById("totDue").value= td.toFixed(2);
+		document.getElementById("lblTot").innerHTML="Total Due :";
+		
+	}
+	
+	function GetSaleTotal()
+	{
+		 let table = document.getElementById("tblDuePmt");
+		var ts=0;
+		//var tp=0;
+		//var td=0;
+		
+		
+        if (!table) return;
+        
+        for (let i = 1; i < table.rows.length; i++) {
+             ts=ts+parseFloat(table.rows[i].cells[7].innerText);
+			//tp=tp+parseFloat(table.rows[i].cells[4].innerText);
+			//td=td+parseFloat(table.rows[i].cells[7].innerText);
+        }
+		/*
+		document.getElementById("totSale").value=ts.toFixed(2);
+		document.getElementById("totPmnt").value=tp.toFixed(2); */
+		document.getElementById("totDue").value= ts.toFixed(2);
+		document.getElementById("lblTot").innerHTML="Total Sale :";
+		
+	}
+	function GetPaymentTotal()
+	{
+		 let table = document.getElementById("tblDuePmt");
+		//var ts=0;
+		var tp=0;
+		//var td=0;
+		
+		
+        if (!table) return;
+        
+        for (let i = 1; i < table.rows.length; i++) {
+             tp=tp+parseFloat(table.rows[i].cells[3].innerText);
+			//tp=tp+parseFloat(table.rows[i].cells[4].innerText);
+			//td=td+parseFloat(table.rows[i].cells[7].innerText);
+        }
+		/*
+		document.getElementById("totSale").value=ts.toFixed(2);
+		document.getElementById("totPmnt").value=tp.toFixed(2); */
+		document.getElementById("totDue").value= tp.toFixed(2);
+		document.getElementById("lblTot").innerHTML="Total Payment :";
+		
+	}
+    window.onload = function () {
+        showDuePayment("");
+	
+		document.getElementById("totDue").readOnly = true;
+		document.getElementById("totDue").style.backgroundColor = "#f0f0f0";
+        loadCustCombo();
+		
+    };
+async function loadCustCombo()
+{
+    try {
+    
+     let sql = `SELECT * FROM find_total_due WHERE NOT TotalDue=0`;  
+      const data = await runSqlQuery(sql);
+      let Cust = document.getElementById('customers');
+      let opt = '<option value="">-- All Customers --</option>';
+      data.forEach(row => {
+      
+      opt += `<option value="${row.CustID}">${row.CustName}</option>`;
+    });
+    Cust.innerHTML = opt;
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }		  
+  
+}
+async function runSqlQuery(sql) {
+  try {
+    const res = await fetch('/api/my_sql/get-SqlQuery', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sql })
+    });
+
+    if (!res.ok) {
+      throw new Error(`Server error: ${res.status}`);
+    }
+
+    return await res.json();  // rows from DB
+  } catch (err) {
+    console.error('Query failed:', err);
+    return [];
+  }
+}
+	 fetch("/menu.html")
+      .then(res => res.text())
+      .then(html => { document.getElementById("menu").innerHTML = html; });
+</script>
+
+
+<script src="jquery.min.js"></script>
+</head>
+
+<body>
+<div id="menu"></div> <!-- menu.html will load here -->
+
+<form  id="duePaymentForm">
+
+
+<div class="mainDiv">
+    <h1>Due Payment Details</h1>
+
+    <div class="select-row">
+        <label for="customers"><strong>Select Customer:</strong></label>
+        <select name="customers" id="customers" onchange="showDuePayment(this.value)">
+            <option value="">-- All Customers --</option>
+           
+        </select>
+    </div>
+
+    <div class="divContainer">
+        <div id="txtHint"></div>
+    </div>
+	<div class="form-grid">
+	
+
+		<label class="secondlast" style="color:red" id="lblTot" for="totDue">Total Due :</label>
+		<input class="last" type="text" name="totDue" id="totDue">
+	</div>
+
+
+    <div class="form-actions">
+        <button type="button" onclick="showSaleDetail('') "><b>Sale</b></button>
+        <button type="button" onclick="showPaymentDetail('')"><b>Payment</b></button>
+		 <button type="button" onclick="showDue()"><b>Due</b></button>
+        <button type="button" onclick="getBack()"><b>Back</b></button>
+    </div>
+</div>
+
+
+</form>
+</body>
+</html>
